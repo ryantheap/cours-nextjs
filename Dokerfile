@@ -1,19 +1,35 @@
-FROM node:20
+# Étape 1 : Construire l'application
+FROM node:20 AS builder
 
-# Create app directory
-WORKDIR /usr/src/app
+# Définir le répertoire de travail
+WORKDIR /app
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
+# Copier les fichiers de dépendances
+COPY package.json package-lock.json ./
 
-# Install app dependencies
+# Installer les dépendances
 RUN npm install
 
-# Bundle app source
+# Copier le reste de l'application
 COPY . .
 
-# Start the server using the production build
-CMD [ "node", "index.js" ]
+# Construire l'application Next.js
+RUN npm run build
 
-# Exposing server port
+# Étape 2 : Configurer l'image pour exécuter l'application
+FROM node:20
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier uniquement les fichiers nécessaires à partir de l'étape précédente
+COPY --from=builder /app/package.json /app/package-lock.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+
+# Exposer le port utilisé par l'application Next.js
 EXPOSE 3000
+
+# Définir la commande par défaut pour démarrer l'application
+CMD ["npm", "start"]
