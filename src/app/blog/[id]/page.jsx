@@ -1,18 +1,15 @@
 export async function generateStaticParams() {
-  const response = await fetch(
-    "https://cours-nextjs-default-rtdb.europe-west1.firebasedatabase.app/articles.json"
-  );
-
-  const articles = await response.json();
-
-  let posts = [];
-  for (const key in articles) {
-    posts.push({
-      id: key,
-    });
-  }
-
-  return posts;
+  // const response = await fetch(
+  //   "https://cours-nextjs-default-rtdb.europe-west1.firebasedatabase.app/articles.json"
+  // );
+  // const articles = await response.json();
+  // let posts = [];
+  // for (const key in articles) {
+  //   posts.push({
+  //     id: key,
+  //   });
+  // }
+  // return posts;
 }
 
 export default async function Article({ params: { id } }) {
